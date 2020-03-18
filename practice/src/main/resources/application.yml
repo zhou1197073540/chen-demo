@@ -1,0 +1,18 @@
+#server:
+#  port: 8086
+
+#测试
+spring:
+  profiles:
+    active: dev-mysql
+
+#线上
+#spring:
+#  profiles:
+#    active: pro-mysql
+
+logging:
+  config: classpath:logback.xml
+
+debug: false
+

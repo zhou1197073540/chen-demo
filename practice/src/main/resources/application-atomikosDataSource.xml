@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+<!--    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
+<!--        <property name="locations">-->
+<!--            <list>-->
+<!--                <value>classpath:jta.properties</value>-->
+<!--            </list>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+    <!--==========针对两个库，各配置一个AtomikosDataSourceBean，底层都使用MysqlXADataSource===================== -->
+    <!--配置数据源master -->
+<!--    <bean id="member" class="com.atomikos.jdbc.AtomikosDataSourceBean"-->
+<!--          init-method="init" destroy-method="close">-->
+<!--        <property name="uniqueResourceName" value="ds1" />-->
+<!--        <property name="xaDataSourceClassName"-->
+<!--                  value="com.alibaba.druid.pool.xa.DruidXADataSource" />-->
+<!--        <property name="xaProperties">-->
+<!--            <props>-->
+<!--                <prop key="url">jdbc:mysql://101.132.86.237:3307/sense_info_external?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;transformedBitIsBoolean=true</prop>-->
+<!--                <prop key="user">root</prop>-->
+<!--                <prop key="password">chenzhen</prop>-->
+<!--            </props>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+<!--    <bean id="member" class="com.alibaba.druid.pool.xa.DruidXADataSource"-->
+<!--          init-method="init" destroy-method="close">-->
+<!--        <property name="driverClassName" value="com.mysql.jdbc.Driver" />-->
+<!--&lt;!&ndash;        <property name="url" value="jdbc:mysql://101.132.86.237:3307/sense_info_external?useUnicode=true&amp;characterEncoding=UTF-8&amp;transformedBitIsBoolean=true" />&ndash;&gt;-->
+<!--&lt;!&ndash;        <property name="username" value="root" />&ndash;&gt;-->
+<!--&lt;!&ndash;        <property name="password" value="chenzhen" />&ndash;&gt;-->
+
+<!--        <property name="url" value="jdbc:mysql://rm-uf61117yxmh6sk301co.mysql.rds.aliyuncs.com:3306/sensebot_info_external?useUnicode=true&amp;pinGlobalTxToPhysicalConnection=true&amp;characterEncoding=UTF-8&amp;transformedBitIsBoolean=true" />-->
+<!--        <property name="username" value="senseext" />-->
+<!--        <property name="password" value="SenseInfoUPENNY0530" />-->
+<!--        &lt;!&ndash; 配置初始化大小、最小、最大 &ndash;&gt;-->
+<!--        <property name="initialSize" value="3" />-->
+<!--        <property name="minIdle" value="3" />-->
+<!--        <property name="maxActive" value="100" />-->
+<!--        &lt;!&ndash; 配置获取连接等待超时的时间 &ndash;&gt;-->
+<!--        <property name="maxWait" value="60000" />-->
+<!--        &lt;!&ndash; 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 &ndash;&gt;-->
+<!--        <property name="timeBetweenEvictionRunsMillis" value="60000" />-->
+<!--        &lt;!&ndash; 配置一个连接在池中最小生存的时间，单位是毫秒 &ndash;&gt;-->
+<!--        <property name="minEvictableIdleTimeMillis" value="300000" />-->
+<!--        <property name="validationQuery" value="SELECT 'x'" />-->
+<!--        <property name="testWhileIdle" value="true" />-->
+<!--        <property name="testOnBorrow" value="false" />-->
+<!--        <property name="testOnReturn" value="false" />-->
+<!--        &lt;!&ndash; 打开PSCache，并且指定每个连接上PSCache的大小（Oracle使用） <property name="poolPreparedStatements"-->
+<!--            value="true" /> <property name="maxPoolPreparedStatementPerConnectionSize"-->
+<!--            value="20" /> &ndash;&gt;-->
+<!--        &lt;!&ndash; 配置监控统计拦截的filters &ndash;&gt;-->
+<!--        <property name="filters" value="stat" />-->
+<!--    </bean>-->
+<!--    <bean id="dataSource01" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">-->
+<!--        <property name="uniqueResourceName" value="member1" />-->
+<!--        <property name="xaDataSource" ref="member"/>-->
+<!--        <property name="xaDataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />-->
+<!--    </bean>-->
+
+    <bean id="dataSource01" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean" init-method="init" destroy-method="close">
+        <property name="uniqueResourceName" value="member1" />
+        <property name="url" value="jdbc:mysql://rm-uf61117yxmh6sk301co.mysql.rds.aliyuncs.com:3306/sensebot_info_external?useUnicode=true&amp;characterEncoding=UTF-8&amp;transformedBitIsBoolean=true" />
+        <property name="user" value="senseext" />
+        <property name="password" value="SenseInfoUPENNY0530" />
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="poolSize" value="3" />
+        <property name="minPoolSize" value="3" />
+        <property name="maxPoolSize" value="5" />
+    </bean>
+    <!-- 创建SqlSessionFactory，同时指定数据源 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource01" />
+        <property name="mapperLocations" value="classpath*:mapper/*.xml" />
+        <property name="configLocation" value="classpath:config/mybatis-config.xml"/>
+    </bean>
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
+        <constructor-arg index="0" ref="sqlSessionFactory" />
+    </bean>
+
+    <!--=============针对两个SqlSessionFactoryBean，各配置一个MapperScannerConfigurer============ -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+        <!--指定com.tianshouzhi.atomikos.mappers.db_user包下的UserMapper接口使用ssf_user获取底层数据库连接 -->
+        <property name="basePackage" value="com.exa.demo.example.AtomikosDemo.mappers.member" />
+    </bean>
+
+    <!--配置数据源db_account -->
+<!--    <bean id="dataSource02" class="com.atomikos.jdbc.AtomikosDataSourceBean"-->
+<!--          init-method="init" destroy-method="close">-->
+<!--        <property name="uniqueResourceName" value="ds2" />-->
+<!--        <property name="xaDataSourceClassName"-->
+<!--                  value="com.alibaba.druid.pool.xa.DruidXADataSource" />-->
+<!--        <property name="xaProperties">-->
+<!--            <props>-->
+<!--&lt;!&ndash;                <prop key="url">jdbc:mysql://senseai123.mysql.rds.aliyuncs.com:3306/sense_info_external?useUnicode=true&amp;characterEncoding=UTF-8&amp;pinGlobalTxToPhysicalConnection=true&amp;transformedBitIsBoolean=true</prop>&ndash;&gt;-->
+<!--&lt;!&ndash;                <prop key="user">senseai</prop>&ndash;&gt;-->
+<!--&lt;!&ndash;                <prop key="password">Sh#ysYhL9T</prop>&ndash;&gt;-->
+<!--                <prop key="url">jdbc:mysql://rr-uf6w52m112j2219v9po.mysql.rds.aliyuncs.com:3306/sensebot_info_external?useUnicode=true&amp;pinGlobalTxToPhysicalConnection=true&amp;characterEncoding=UTF-8&amp;transformedBitIsBoolean=true</prop>-->
+<!--                <prop key="username">senseext</prop>-->
+<!--                <prop key="password">SenseInfoUPENNY0530</prop>-->
+<!--            </props>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+<!--    <bean id="memberInfo" class="com.alibaba.druid.pool.xa.DruidXADataSource" init-method="init" destroy-method="close">-->
+<!--        <property name="driverClassName" value="com.mysql.jdbc.Driver" />-->
+<!--&lt;!&ndash;        <property name="url" value="jdbc:mysql://senseai123.mysql.rds.aliyuncs.com:3306/sense_info_external?useUnicode=true&amp;characterEncoding=UTF-8&amp;transformedBitIsBoolean=true" />&ndash;&gt;-->
+<!--&lt;!&ndash;        <property name="username" value="senseai" />&ndash;&gt;-->
+<!--&lt;!&ndash;        <property name="password" value="Sh#ysYhL9T" />&ndash;&gt;-->
+
+<!--        <property name="url" value="jdbc:mysql://rr-uf6w52m112j2219v9po.mysql.rds.aliyuncs.com:3306/sensebot_info_external?useUnicode=true&amp;pinGlobalTxToPhysicalConnection=true&amp;characterEncoding=UTF-8&amp;transformedBitIsBoolean=true" />-->
+<!--        <property name="username" value="senseext" />-->
+<!--        <property name="password" value="SenseInfoUPENNY0530" />-->
+
+<!--        &lt;!&ndash; 配置初始化大小、最小、最大 &ndash;&gt;-->
+<!--        <property name="initialSize" value="3" />-->
+<!--        <property name="minIdle" value="3" />-->
+<!--        <property name="maxActive" value="100" />-->
+<!--        &lt;!&ndash; 配置获取连接等待超时的时间 &ndash;&gt;-->
+<!--        <property name="maxWait" value="60000" />-->
+<!--        &lt;!&ndash; 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 &ndash;&gt;-->
+<!--        <property name="timeBetweenEvictionRunsMillis" value="60000" />-->
+<!--        &lt;!&ndash; 配置一个连接在池中最小生存的时间，单位是毫秒 &ndash;&gt;-->
+<!--        <property name="minEvictableIdleTimeMillis" value="300000" />-->
+<!--        <property name="validationQuery" value="SELECT 'x'" />-->
+<!--        <property name="testWhileIdle" value="true" />-->
+<!--        <property name="testOnBorrow" value="false" />-->
+<!--        <property name="testOnReturn" value="false" />-->
+<!--        &lt;!&ndash; 打开PSCache，并且指定每个连接上PSCache的大小（Oracle使用） <property name="poolPreparedStatements"-->
+<!--            value="true" /> <property name="maxPoolPreparedStatementPerConnectionSize"-->
+<!--            value="20" /> &ndash;&gt;-->
+<!--        &lt;!&ndash; 配置监控统计拦截的filters &ndash;&gt;-->
+<!--        <property name="filters" value="stat" />-->
+<!--    </bean>-->
+
+
+<!--    <bean id="dataSource02" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">-->
+<!--        <property name="uniqueResourceName" value="memberInfo2" />-->
+<!--        <property name="xaDataSource" ref="memberInfo"/>-->
+<!--&lt;!&ndash;        <property name="xaDataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />&ndash;&gt;-->
+<!--        <property name="maxPoolSize" value="100"/>-->
+<!--        <property name="borrowConnectionTimeout" value="30"/>-->
+<!--        <property name="testQuery" value="select 1"/>-->
+<!--        <property name="maintenanceInterval" value="60"/>-->
+<!--    </bean>-->
+
+    <bean id="dataSource02" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean" init-method="init" destroy-method="close">
+        <property name="uniqueResourceName" value="memberInfo2" />
+        <property name="url" value="jdbc:mysql://rr-uf6w52m112j2219v9po.mysql.rds.aliyuncs.com:3306/sensebot_info_external?useUnicode=true&amp;pinGlobalTxToPhysicalConnection=true&amp;characterEncoding=UTF-8&amp;transformedBitIsBoolean=true" />
+        <property name="user" value="senseext" />
+        <property name="password" value="SenseInfoUPENNY0530" />
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="poolSize" value="3" />
+        <property name="minPoolSize" value="3" />
+        <property name="maxPoolSize" value="5" />
+    </bean>
+
+    <!-- 创建SqlSessionFactory，同时指定数据源 -->
+    <bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource02" />
+        <property name="mapperLocations" value="classpath*:mapper/*.xml" />
+        <property name="configLocation" value="classpath:config/mybatis-config.xml"/>
+    </bean>
+    <bean id="sqlSession2" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
+        <constructor-arg index="0" ref="sqlSessionFactory2" />
+    </bean>
+
+    <!--=============针对两个SqlSessionFactoryBean，各配置一个MapperScannerConfigurer============ -->
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory2" />
+        <!--指定com.tianshouzhi.atomikos.mappers.ds_account包下的AccountMapper接口使用ssf_account获取底层数据库连接 -->
+        <property name="basePackage" value="com.exa.demo.example.AtomikosDemo.mappers.memberInfo" />
+    </bean>
+
+    <!--================配置atomikos事务管理器======================== -->
+<!--    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"-->
+<!--          init-method="init" destroy-method="close">-->
+<!--        <property name="forceShutdown" value="true" />-->
+<!--    </bean>-->
+
+<!--    &lt;!&ndash;============配置spring的JtaTransactionManager，底层委派给atomikos进行处理=============== &ndash;&gt;-->
+<!--    <bean id="jtaTransactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">-->
+<!--        <property name="transactionManager" ref="atomikosTransactionManager" />-->
+<!--    </bean>-->
+
+<!--    &lt;!&ndash;配置spring声明式事务管理器 &ndash;&gt;-->
+<!--    <tx:annotation-driven transaction-manager="jtaTransactionManager" />-->
+
+    <bean id="jtaService" class="com.exa.demo.example.AtomikosDemo.JTAService" />
+
+    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
+          init-method="init" destroy-method="close">
+        <property name="forceShutdown" value="true" />
+    </bean>
+
+    <!-- atomitos事务 -->
+    <bean id="atomikosTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+        <property name="transactionTimeout" value="600"/>
+    </bean>
+
+    <!--============配置spring的JtaTransactionManager，底层委派给atomikos进行处理=============== -->
+    <bean id="jtaTransactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="transactionManager" ref="atomikosTransactionManager" />
+        <property name="userTransaction" ref="atomikosTransaction"/>
+        <property name="allowCustomIsolationLevels" value="true"/>
+        <property name="globalRollbackOnParticipationFailure" value="true"/>
+    </bean>
+
+    <!--配置spring声明式事务管理器 -->
+    <tx:annotation-driven transaction-manager="jtaTransactionManager" />
+</beans>
