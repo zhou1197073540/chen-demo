@@ -24,4 +24,7 @@ public interface MemberInfoMapper {
 
     @Select("SELECT * FROM `tnews_info_bak` LIMIT 1")
     PageData select46ReadOnly();
+
+    @Select("select 1")
+    int selectOne();
 }

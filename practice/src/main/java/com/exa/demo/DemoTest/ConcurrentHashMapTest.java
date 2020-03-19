@@ -9,9 +9,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConcurrentHashMapTest {
 
-    public static ConcurrentHashMap<Integer, Integer> map=new ConcurrentHashMap<>();
-    public static ThreadPoolUtil pool=new ThreadPoolUtil(2);
-    public static final AtomicInteger aa=new AtomicInteger();
+    public static ConcurrentHashMap<Integer, Integer> map = new ConcurrentHashMap<>();
+    public static ThreadPoolUtil pool = new ThreadPoolUtil(2);
+    public static final AtomicInteger aa = new AtomicInteger();
 
     public static void main(String[] args) {
 //        for(int i=0;i<100;i++){
@@ -22,39 +22,53 @@ public class ConcurrentHashMapTest {
 //            });
 //        }
 
-        new Thread(()->{
-            A a=new A("0f8c0a90-edf1-45a1-a12a-6f4f9ca6bdd0");
-            B.cc(a);
-        }).start();
-
-        new Thread(()->{
-            A a=new A("0f8c0a90-edf1-45a1-a12a-6f4f9ca6bdd0");
-            B.cc(a);
-        }).start();
+//        new Thread(()->{
+//            A a=new A("0f8c0a90-edf1-45a1-a12a-6f4f9ca6bdd0");
+//            B.cc(a);
+//        }).start();
+//
+//        new Thread(()->{
+//            A a=new A("0f8c0a90-edf1-45a1-a12a-6f4f9ca6bdd0");
+//            B.cc(a);
+//        }).start();
 
 //        Interner<String> pool = Interners.newWeakInterner();
 //        System.out.println(pool.intern("123"));
+
+
+        new Thread(() -> {
+            while (true) {
+                System.out.println("====================start");
+                try {
+                    TimeUnit.SECONDS.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
 
-class B{
+class B {
     private static Interner<String> pool = Interners.newWeakInterner();
-    public static void cc(A a){
+
+    public static void cc(A a) {
 //        Interner<String> pool = Interners.newWeakInterner();
 //        String ids=a.getId().intern();
-        synchronized (pool.intern(a.getId())){
-            System.out.println(Thread.currentThread().getName()+"====="+a.hashCode());
+        synchronized (pool.intern(a.getId())) {
+            System.out.println(Thread.currentThread().getName() + "=====" + a.hashCode());
             try {
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(Thread.currentThread().getName()+"====="+a.hashCode());
+            System.out.println(Thread.currentThread().getName() + "=====" + a.hashCode());
         }
     }
 }
+
 class A {
-    String id="";
+    String id = "";
 
     public A(String id) {
         this.id = id;

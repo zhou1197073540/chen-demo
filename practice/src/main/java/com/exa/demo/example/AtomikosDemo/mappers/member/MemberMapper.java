@@ -16,6 +16,9 @@ public interface MemberMapper {
     @Select("select count(*) from h_cc_cdr")
     int selectCount();
 
+    @Select("select 1")
+    int selectOne();
+
 
     @Insert("insert into my_test_table(message_id,message_content,time_stamp) " +
             "values (#{message_id},#{message_content},#{time_stamp})")
