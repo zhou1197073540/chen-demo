@@ -8,7 +8,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DbPoolMonitorService implements ApplicationContextAware, CommandLineRunner {
     private ApplicationContext ac;
     private MemberMapper memberMapper;
