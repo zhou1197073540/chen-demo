@@ -47,41 +47,45 @@ public class ConcurrentHashMapTest {
             }
         }).start();
     }
-}
 
-class B {
-    private static Interner<String> pool = Interners.newWeakInterner();
+    class A {
+        String id = "";
 
-    public static void cc(A a) {
+        public A(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+    }
+
+    class B {
+        private Interner<String> pool = Interners.newWeakInterner();
+
+        public void cc(A a) {
 //        Interner<String> pool = Interners.newWeakInterner();
 //        String ids=a.getId().intern();
-        synchronized (pool.intern(a.getId())) {
-            System.out.println(Thread.currentThread().getName() + "=====" + a.hashCode());
-            try {
-                TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            synchronized (pool.intern(a.getId())) {
+                System.out.println(Thread.currentThread().getName() + "=====" + a.hashCode());
+                try {
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(Thread.currentThread().getName() + "=====" + a.hashCode());
             }
-            System.out.println(Thread.currentThread().getName() + "=====" + a.hashCode());
         }
     }
 }
 
-class A {
-    String id = "";
 
-    public A(String id) {
-        this.id = id;
-    }
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-}
 
 
 

@@ -3,7 +3,16 @@ package com.exa.demo.DemoTest;
 public class ExceptionDemo {
 
     public static void main(String[] args) {
-        test();
+//        test();
+        testQiOu(2);
+
+    }
+
+    //测试奇数偶数
+    private static boolean testQiOu(int i) {
+        int res=i&3;
+        System.out.println(res);
+        return false;
     }
 
 
@@ -17,11 +26,13 @@ public class ExceptionDemo {
         }
     }
 
-}
+    static class SubException{
 
-class SubException{
-
-    public void test(){
-        int a=1/0;
+        public void test(){
+            int a=1/0;
+        }
     }
+
 }
+
+
