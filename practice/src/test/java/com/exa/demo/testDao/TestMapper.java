@@ -1,7 +1,6 @@
 package com.exa.demo.testDao;
 
 import com.exa.demo.DemoApplication;
-import com.exa.demo.POJO.PageData;
 import com.exa.demo.example.AtomikosDemo.mappers.member.MemberMapper;
 import com.exa.demo.example.dbDemo.mappers.TestDao;
 import org.junit.Test;

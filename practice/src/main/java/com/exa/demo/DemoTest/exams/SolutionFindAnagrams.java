@@ -62,9 +62,9 @@ public class SolutionFindAnagrams {
                 char chl = s.charAt(left);
                 if (needs[chl - 'a'] > 0) {
                     window[chl - 'a']--;
-//                    if (window[chl - 'a'] < needs[chl - 'a']) {
+                    if (window[chl - 'a'] < needs[chl - 'a']) {
                         total++;
-//                    }
+                    }
                 }
                 System.out.println(left+"=="+total);
                 if (right - left + 1 == p.length()) {

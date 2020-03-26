@@ -27,24 +27,16 @@ import lombok.Data;
  */
 public class longestSubstringWithoutRepeatingCharacters {
 
-    public void add() {
+    public void execute() {
+        int[] left=new int[26];
+        int[] right=new int[26];
+
+
 
     }
 
     public static void main(String[] args) {
     }
 
-    @Data
-    static class Node {
-
-        public class ListNode {
-            int val;
-            ListNode next;
-
-            ListNode(int x) {
-                val = x;
-            }
-        }
-    }
 
 }

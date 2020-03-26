@@ -19,30 +19,29 @@ public class DbPoolMonitorService implements ApplicationContextAware, CommandLin
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         System.out.println("applicationContext 。。。");
-        this.ac=applicationContext;
+        this.ac = applicationContext;
     }
 
     @Override
     public void run(String... args) throws Exception {
         System.out.println("run bean 。。。");
-        AtomikosNonXADataSourceBean dataSource01 = (AtomikosNonXADataSourceBean)ac.getBean("dataSource01");
-        AtomikosNonXADataSourceBean dataSource02 = (AtomikosNonXADataSourceBean)ac.getBean("dataSource02");
-        this.memberMapper= (MemberMapper) ac.getBean("memberMapper");
-        this.memberInfoMapper= (MemberInfoMapper) ac.getBean("memberInfoMapper");
-        while(true){
-            try {
-                dataSource01.setTestQuery("select 1");
-                dataSource02.setTestQuery("select 1");
-                int i=memberMapper.selectOne();
-                int j=memberInfoMapper.selectOne();
-                System.out.println(i+"=="+j);
-            }catch (Exception e){
-                e.printStackTrace();
-            }finally {
-                dataSource01.setTestQuery(null);
-                dataSource02.setTestQuery(null);
-            }
-        }
-
+//        AtomikosNonXADataSourceBean dataSource01 = (AtomikosNonXADataSourceBean) ac.getBean("dataSource01");
+//        AtomikosNonXADataSourceBean dataSource02 = (AtomikosNonXADataSourceBean) ac.getBean("dataSource02");
+//        this.memberMapper = (MemberMapper) ac.getBean("memberMapper");
+//        this.memberInfoMapper = (MemberInfoMapper) ac.getBean("memberInfoMapper");
+//        while (true) {
+//            try {
+//                dataSource01.setTestQuery("select 1");
+//                dataSource02.setTestQuery("select 1");
+//                int i = memberMapper.selectOne();
+//                int j = memberInfoMapper.selectOne();
+//                System.out.println(i + "==" + j);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            } finally {
+//                dataSource01.setTestQuery(null);
+//                dataSource02.setTestQuery(null);
+//            }
+//        }
     }
 }
